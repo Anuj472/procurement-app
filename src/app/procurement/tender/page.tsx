@@ -31,11 +31,7 @@ export default function TenderClubbing() {
 
   return (
     <main className="min-h-screen bg-transparent relative z-0 pb-20">
-      <div className="fixed w-full h-full top-0 left-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30" />
-        <div className="absolute w-[500px] h-[500px] top-[10%] left-[5%] rounded-full bg-blue-400 opacity-5 blur-3xl animate-pulse" />
-        <div className="absolute w-[400px] h-[400px] top-[50%] right-[5%] rounded-full bg-purple-400 opacity-5 blur-3xl animate-pulse [animation-delay:2s]" />
-      </div>
+      <div className="fixed inset-0 -z-10 bg-slate-50"></div>
 
       <div className="pt-20">
         <div className="max-w-7xl mx-auto px-5">

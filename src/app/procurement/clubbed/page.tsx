@@ -19,85 +19,176 @@ export default function ClubbedItemsPage() {
   }, [])
 
   return (
-    <main className="min-h-screen bg-transparent relative z-0 pb-20">
-      <div className="fixed w-full h-full top-0 left-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30" />
-        <div className="absolute w-[500px] h-[500px] top-[10%] left-[5%] rounded-full bg-blue-400 opacity-5 blur-3xl animate-pulse" />
-        <div className="absolute w-[400px] h-[400px] top-[50%] right-[5%] rounded-full bg-purple-400 opacity-5 blur-3xl animate-pulse [animation-delay:2s]" />
-      </div>
+    <main className="min-h-screen bg-slate-50 relative z-0 pb-20">
+      {/* Background Ambience removed for cleaner UI */}
+      <div className="fixed inset-0 -z-10 bg-slate-50"></div>
 
-      <div className="pt-20">
+      <div className="pt-16">
         <div className="max-w-7xl mx-auto px-5">
+          {/* Header Bar */}
           <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-4xl font-bold mb-2 text-gray-900">Tender Clubbing by Vendor Pools</h1>
-              <p className="text-lg text-gray-600">Items grouped into separate tables based on identical supplying vendor pools.</p>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold uppercase tracking-wider shadow-xs">
+                  Tender Enquiry Matrix
+                </span>
+                <span className="text-sm text-slate-500 font-medium">
+                  {tenderGroups.length} Vendor Pool Table{tenderGroups.length === 1 ? '' : 's'}
+                </span>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold text-slate-900">
+                Clubbed Items by Common Supplying Vendors
+              </h1>
+              <p className="text-base text-slate-600 mt-1">
+                Each table represents items that share the exact same historical supplier pool, grouped for combined tender issuance.
+              </p>
             </div>
-            <Link href="/" className="px-5 py-2.5 bg-white/80 backdrop-blur border border-gray-200 rounded-xl text-gray-700 font-medium hover:bg-gray-50 hover:shadow-sm transition">
-              ← Back to Search
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/procurement/tender"
+                className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 shadow-sm transition"
+              >
+                Create Tender Matrix →
+              </Link>
+              <Link
+                href="/"
+                className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm font-medium hover:bg-slate-50 hover:shadow-xs transition"
+              >
+                ← Back
+              </Link>
+            </div>
           </div>
 
+          {/* Loading Indicator */}
           {loading && (
-            <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="flex flex-col items-center justify-center py-24 gap-3">
+              <div className="animate-spin rounded-full h-10 w-10 border-3 border-blue-600 border-t-transparent"></div>
+              <p className="text-slate-500 text-sm font-medium">Analyzing historical vendor pools & SHIS records...</p>
             </div>
           )}
 
-          {error && <div className="bg-red-50 text-red-600 p-6 rounded-2xl border border-red-100">Error: {error}</div>}
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 text-red-700 p-6 rounded-2xl border border-red-200 mb-8 shadow-xs">
+              <h3 className="font-semibold text-base mb-1">Failed to load procurement groups</h3>
+              <p className="text-sm">{error}</p>
+            </div>
+          )}
 
+          {/* Empty State */}
           {!loading && !error && tenderGroups.length === 0 && (
-            <div className="bg-white/80 backdrop-blur-md p-12 rounded-2xl shadow-sm border border-gray-100 text-center text-gray-500">
-              No clubbed groups found.
+            <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center shadow-xs">
+              <p className="text-slate-500 text-base">No clubbed item groups found.</p>
             </div>
           )}
 
-          <div className="space-y-12">
+          {/* Render One Separate Table per Distinct Vendor Pool */}
+          <div className="space-y-10">
             {tenderGroups.map((group: any, gIdx: number) => (
-              <div key={gIdx} className="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                {/* Group Header: Shared Vendors */}
-                <div className="bg-gradient-to-r from-blue-50/80 to-transparent p-6 border-b border-gray-100">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div
+                key={gIdx}
+                className="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden transition-all duration-200 hover:shadow-md"
+              >
+                {/* Table / Group Header */}
+                <div className="bg-slate-900 text-white px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-300 font-bold text-sm">
+                      #{gIdx + 1}
+                    </div>
                     <div>
-                      <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold uppercase tracking-wider">
-                        Tender Group #{gIdx + 1}
-                      </span>
-                      <h3 className="text-xl font-bold text-gray-900 mt-2">Shared Supplying Vendors:</h3>
-                      <div className="flex flex-wrap gap-2 mt-2">
+                      <h2 className="text-lg font-bold tracking-tight text-white">
+                        Table {gIdx + 1}: Common Supplying Vendor Pool
+                      </h2>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-0.5 text-xs text-slate-300">
+                        <span className="font-semibold text-blue-300">Qualified Vendors:</span>
                         {group.vendors.map((v: string, vIdx: number) => (
-                          <span key={vIdx} className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-800 shadow-2xs">
+                          <span key={vIdx} className="bg-slate-800 px-2 py-0.5 rounded text-slate-200 border border-slate-700">
                             {vIdx + 1}. {v}
                           </span>
                         ))}
                       </div>
                     </div>
-                    <span className="text-sm font-semibold text-gray-500 self-start md:self-center bg-white/60 px-3 py-1.5 rounded-xl border border-gray-200">
-                      {group.items.length} Items in Group
+                  </div>
+                  <div className="self-start md:self-center">
+                    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 border border-blue-400/20">
+                      {group.items.length} {group.items.length === 1 ? 'Item' : 'Items'} in this Group
                     </span>
                   </div>
                 </div>
 
-                {/* Items Table for this exact vendor pool */}
-                <div className="overflow-x-auto custom-scrollbar p-6">
-                  <table className="w-full text-left border-collapse min-w-[700px]">
+                {/* Table Content */}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-[760px]">
                     <thead>
-                      <tr className="border-b border-gray-100 text-gray-500 text-sm">
-                        <th className="pb-3 font-semibold">Item / LF No</th>
-                        <th className="pb-3 font-semibold">Description</th>
-                        <th className="pb-3 font-semibold text-right">Last Supplied Rate (Wo Tax)</th>
-                        <th className="pb-3 font-semibold text-right">Total SHIS Qty</th>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs uppercase font-bold tracking-wider">
+                        <th className="py-3.5 px-6 w-1/4">Item / LF No</th>
+                        <th className="py-3.5 px-6 w-1/3">Previous Vendors</th>
+                        <th className="py-3.5 px-6 text-right w-1/5">Last Supplied Rate</th>
+                        <th className="py-3.5 px-6 text-right w-1/5">Total SHIS Quantity</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-50">
+                    <tbody className="divide-y divide-slate-100 text-sm">
                       {group.items.map((item: any, iIdx: number) => (
-                        <tr key={item.lf_no || iIdx} className="hover:bg-blue-50/20 transition-colors">
-                          <td className="py-4 font-bold text-blue-600 text-base">{item.lf_no}</td>
-                          <td className="py-4 text-gray-700 text-sm">{item.item_description}</td>
-                          <td className="py-4 text-right font-semibold text-gray-900">
-                            {item.last_supplied_rate !== 'N/A' ? `₹${Number(item.last_supplied_rate).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : 'N/A'}
+                        <tr
+                          key={item.lf_no || iIdx}
+                          className="hover:bg-slate-50/70 transition-colors"
+                        >
+                          {/* Column 1: Item / LF No */}
+                          <td className="py-4 px-6 align-top">
+                            <div className="font-bold text-blue-700 text-base font-mono">
+                              {item.lf_no}
+                            </div>
+                            <div className="text-xs text-slate-600 font-normal mt-0.5 line-clamp-2">
+                              {item.item_description}
+                            </div>
                           </td>
-                          <td className="py-4 text-right font-bold text-gray-900 text-base">
-                            {item.total_shis_quantity}
+
+                          {/* Column 2: Previous Vendors */}
+                          <td className="py-4 px-6 align-top">
+                            <ul className="space-y-1">
+                              {item.previous_vendors && item.previous_vendors.length > 0 ? (
+                                item.previous_vendors.map((v: string, vIdx: number) => (
+                                  <li
+                                    key={vIdx}
+                                    className="text-slate-800 text-xs font-medium flex items-start gap-1.5"
+                                  >
+                                    <span className="font-semibold text-slate-500 font-mono">
+                                      {vIdx + 1}.
+                                    </span>
+                                    <span>{v}</span>
+                                  </li>
+                                ))
+                              ) : (
+                                <li className="text-slate-400 text-xs italic">
+                                  No prior vendors recorded
+                                </li>
+                              )}
+                            </ul>
+                          </td>
+
+                          {/* Column 3: Last Supplied Rate */}
+                          <td className="py-4 px-6 text-right align-top">
+                            <div className="font-bold text-slate-900 font-mono text-base">
+                              {item.last_supplied_rate != null
+                                ? `₹${Number(item.last_supplied_rate).toLocaleString('en-IN', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                  })}`
+                                : 'N/A'}
+                            </div>
+                            <span className="text-[11px] text-slate-600 uppercase font-semibold">
+                              (Without Tax)
+                            </span>
+                          </td>
+
+                          {/* Column 4: Total SHIS Quantity */}
+                          <td className="py-4 px-6 text-right align-top">
+                            <span className="inline-block px-3 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-bold font-mono text-base border border-emerald-200">
+                              {Number(item.total_shis_quantity || 0).toLocaleString('en-IN', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                              })}
+                            </span>
                           </td>
                         </tr>
                       ))}
