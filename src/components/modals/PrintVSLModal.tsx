@@ -10,7 +10,7 @@ interface Props {
 
 export default function PrintVSLModal({ onClose, vsls }: Props) {
   const [selectedId, setSelectedId] = useState(vsls[0]?.id || '')
-  const [stePoDetails, setStePoDetails] = useState<any>({})
+  const [poDetails, setPoDetails] = useState<any>({})
   const vsl = vsls.find(v => v.id === selectedId)
 
   // Derived values
@@ -43,7 +43,7 @@ export default function PrintVSLModal({ onClose, vsls }: Props) {
 
   useEffect(() => {
     const fetchPoData = async () => {
-      if (!isSTE || items.length === 0) return
+      if (items.length === 0) return
       
       const supabase = createClient()
       const lfNos = items.map(it => it.lf_no)
@@ -61,14 +61,14 @@ export default function PrintVSLModal({ onClose, vsls }: Props) {
       
       const poMap: any = {}
       lfNos.forEach(lf => {
-        const lastPo = data?.find((d: any) => d.lf_no === lf)
-        if (lastPo) poMap[lf] = lastPo
+        const allPos = data?.filter((d: any) => d.lf_no === lf)
+        if (allPos && allPos.length > 0) poMap[lf] = allPos
       })
-      setStePoDetails(poMap)
+      setPoDetails(poMap)
     }
     
     fetchPoData()
-  }, [selectedId, isSTE, items])
+  }, [selectedId, items])
 
   const handlePrint = () => {
     const printContent = document.getElementById('vsl-print-document');
@@ -169,9 +169,9 @@ export default function PrintVSLModal({ onClose, vsls }: Props) {
             
             {/* SINGLE KNOWN SOURCE CERTIFICATES (STE Only) - AT THE BEGINNING */}
             {isSTE && items.map((it, idx) => {
-              const vendorName = lteFirms[0]?.party_nam || (stePoDetails[it.lf_no]?.m_party?.party_nam || 'UNKNOWN FIRM');
-              const poNo = stePoDetails[it.lf_no]?.po_no || 'OLF/MM2/S-UNKNOWN';
-              const poDt = stePoDetails[it.lf_no]?.po_dt || 'UNKNOWN DATE';
+              const vendorName = lteFirms[0]?.party_nam || (poDetails[it.lf_no]?.[0]?.m_party?.party_nam || 'UNKNOWN FIRM');
+              const poNo = poDetails[it.lf_no]?.[0]?.po_no || 'OLF/MM2/S-UNKNOWN';
+              const poDt = poDetails[it.lf_no]?.[0]?.po_dt || 'UNKNOWN DATE';
               
               const itemSteQty = (it as any).lte_qty || Math.round((it.required_qty || 0) * 0.8);
               const itemSdoteQty = (it as any).sdote_qty || Math.round((it.required_qty || 0) * 0.2);
@@ -350,13 +350,20 @@ export default function PrintVSLModal({ onClose, vsls }: Props) {
                       {fmt(it.required_qty * ((it as any).unit_rate_wo_tax || (it as any).unit_rate || 0))}
                     </td>
                     <td className="border border-black p-1 w-1/5">
-                      <div className="flex flex-col gap-2">
-                        {((it as any).past_suppliers || []).map((v: any, vi: number) => (
-                          <div key={vi}>{v.party_nam || v.vendor_name}</div>
-                        ))}
-                        {((it as any).past_suppliers || []).length === 0 && (stePoDetails[it.lf_no]?.m_party?.party_nam || '-')}
-                      </div>
-                    </td>
+                        <div className="flex flex-col gap-2 text-[8.5pt]">
+                          {poDetails[it.lf_no] && poDetails[it.lf_no].length > 0 ? (
+                            Array.from(new Set(poDetails[it.lf_no].map((p: any) => p.m_party?.party_nam || p.party_cd).filter(Boolean))).map((name: any, vi: number) => (
+                              <div key={vi}>{name}</div>
+                            ))
+                          ) : ((it as any).past_suppliers || []).length > 0 ? (
+                            ((it as any).past_suppliers).map((v: any, vi: number) => (
+                              <div key={vi}>{v.party_nam || v.vendor_name}</div>
+                            ))
+                          ) : (
+                            <div>-</div>
+                          )}
+                        </div>
+                      </td>
                   </tr>
                 ))}
               </tbody>

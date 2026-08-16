@@ -94,14 +94,14 @@ export default function ProcurementDashboard() {
       })
       .catch(err => console.error('Error fetching VSLs:', err))
 
-    fetch('/api/procurement/get-tecs')
-      .then(res => res.json())
+    fetch('/api/procurement/get-tecs').then(res => res.json())
       .then(data => {
         if (data.success && data.tecs) {
           setTecs(data.tecs)
         }
       })
       .catch(err => console.error('Error fetching TECs:', err))
+    fetch('/api/procurement/get-tpcs').then(r => r.json()).then(d => { if (d.success) setTpcs(d.tpcs || []) }).catch(err => console.error('Error fetching TPCs:', err))
   }, [])
 
   const closeModal = () => setActiveModal(null)
@@ -158,7 +158,7 @@ export default function ProcurementDashboard() {
   )
   const filteredTPCs = tpcs.filter(p =>
     p.tpc_no.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.tec_no.toLowerCase().includes(searchQuery.toLowerCase())
+    (p as any).tec_no.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
@@ -202,7 +202,7 @@ export default function ProcurementDashboard() {
           </div>
           <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Vendor Shortlists</p>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Vendor Selection</p>
               <h3 className="text-2xl font-black text-slate-900 mt-1">{vsls.length}</h3>
             </div>
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
@@ -552,13 +552,14 @@ export default function ProcurementDashboard() {
         <CreateTPCModal
           onClose={closeModal}
           tecs={tecs}
+            vsls={vsls}
           existingCount={tpcs.length}
           onSave={tpc => { setTpcs(prev => [tpc, ...prev]); setActiveTab('tpc'); closeModal() }}
         />
       )}
       {activeModal === 'print-vsl' && <PrintVSLModal onClose={closeModal} vsls={vsls} />}
       {activeModal === 'print-tec' && <PrintTECModal onClose={closeModal} tecs={tecs} vsls={vsls} />}
-      {activeModal === 'print-tpc' && <PrintTPCModal onClose={closeModal} tpcs={tpcs} />}
+      {activeModal === 'print-tpc' && <PrintTPCModal onClose={closeModal} tpcs={tpcs} tecs={tecs} vsls={vsls} />}
     </div>
   )
 }
@@ -574,6 +575,11 @@ function EmptyState({ icon, label, sub }: { icon: string; label: string; sub: st
     </div>
   )
 }
+
+
+
+
+
 
 
 

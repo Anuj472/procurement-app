@@ -148,6 +148,39 @@ export interface TEC {
 }
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+export interface TPCItemPriceBid {
+  id?: string
+  tpc_no?: string
+  lf_no: string
+  sch_no: number
+  vendor_name: string
+  quoted_rate_excl_gst: number | null
+  quoted_rate_incl_gst: number | null
+  total_value_incl_gst: number | null
+  lpr_lsor_rate?: number | null
+  lpr_lsor_date?: string | null
+  lpr_lsor_type?: 'LPR' | 'LSoR' | null
+  lpr_lsor_vendor?: string | null
+  lpr_lsor_po_no?: string | null
+  annl_escalation?: number | null
+  is_mse?: boolean
+  is_mii_class1?: boolean
+}
+
+export interface TPCItemDecision {
+  id?: string
+  tpc_no?: string
+  lf_no: string
+  sch_no: number
+  l1_vendor?: string | null
+  l1_qty?: number | null
+  l2_vendor?: string | null
+  l2_qty?: number | null
+  basic_price_per_unit?: number | null
+  price_incl_gst_per_unit?: number | null
+  total_order_price_incl_gst?: number | null
+}
 // TPC â€” Tender Purchase Committee
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -162,20 +195,29 @@ export interface TPCVendorRate {
 }
 
 export interface TPC {
-  id: string;
-  tpc_no: string;
-  tpc_dt: string;
-  tec_id: string;
-  tec_no: string;
-  vsl_no: string;
-  vendor_rates: TPCVendorRate[];
-  final_vendor_cd?: string;
-  final_vendor_name?: string;
-  approved_rate?: number;
-  committee_remarks?: string;
-  prepared_by?: string;
-  status: 'Draft' | 'Approved' | 'PO Issued';
-  created_at: string;
+  id: string
+  tpc_no: string
+  te_no: string
+  tec_no?: string
+  tpc_dt: string
+  gem_bid_no?: string | null
+  gem_bid_dt?: string | null
+  schedule_tod?: string | null
+  case_value_initial?: number | null
+  case_value_present?: number | null
+  price_bids?: TPCItemPriceBid[]
+  decisions?: TPCItemDecision[]
+  committee_remarks?: string
+  prepared_by?: string
+  status: 'Draft' | 'Approved' | 'PO Issued'
+  created_at: string
+  // Legacy
+  tec_id?: string
+  vsl_no?: string
+  vendor_rates?: TPCVendorRate[]
+  final_vendor_cd?: string
+  final_vendor_name?: string
+  approved_rate?: number
 }
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -219,5 +261,6 @@ export interface PreTeRecord {
   sdote_case_value?: number;
   total_case_value?: number;
 }
+
 
 
